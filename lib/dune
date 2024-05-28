@@ -1,0 +1,3 @@
+(library
+ (name superbird_mpris)
+ (libraries pbrt pbrt_services)) ; runtime for protobufs

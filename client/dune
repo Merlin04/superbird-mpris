@@ -1,0 +1,4 @@
+(executable
+ (public_name mpris_client)
+ (name main)
+ (libraries superbird_mpris))
