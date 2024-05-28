@@ -1,15 +1,14 @@
 open Pbrt_services
 
 type handler =
-  | UnaryUnary {
-    rpc: ('req, Value_mode.unary, 'res, Value_mode.unary) Server.rpc;
-    f: 'req -> 'res Lwt.t
-  } | UnaryStream {
-    rpc: ('req, Value_mode.unary, 'res, Value_mode.stream) Server.rpc;
-    f : 'req -> 'res Lwt_stream.t
-  }
+  | UnaryUnary : {
+      rpc: ('req, Value_mode.unary, 'res, Value_mode.unary) Server.rpc;
+      f: 'req -> 'res Lwt.t
+    } -> handler
+  | UnaryStream : {
+      rpc: ('req, Value_mode.unary, 'res, Value_mode.stream) Server.rpc;
+      f : ?switch : Lwt_switch.t -> 'req -> 'res Lwt_stream.t
+    } -> handler
 
-let mk_handler f (rpc : Server.rpc) = match rpc.req_mode, rpc.res_mode with
-  | Value_mode.unary, Value_mode.unary -> UnaryUnary { rpc; f }
-  | Value_mode.unary, Value_mode.stream -> UnaryStream { rpc; f }
-  | _ -> failwith "Unsupported RPC mode"
+let mk_handler_uu f rpc = UnaryUnary { rpc; f }
+let mk_handler_us f rpc = UnaryStream { rpc; f }
