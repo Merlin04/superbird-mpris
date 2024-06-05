@@ -162,3 +162,14 @@ service MPRIS {
   rpc SetShuffle (SetShuffleRequest) returns (Empty);
   rpc SetVolume (SetVolumeRequest) returns (Empty);
 }
+
+message RpcCall {
+  int64 call_id = 1;
+  string name = 2;
+  bytes req = 3;
+}
+
+message RpcResponse {
+  int64 call_id = 1;
+  optional bytes req = 2;
+}

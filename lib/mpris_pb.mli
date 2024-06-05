@@ -130,6 +130,17 @@ type set_position_request = {
   offset : int64;
 }
 
+type rpc_call = {
+  call_id : int64;
+  name : string;
+  req : bytes;
+}
+
+type rpc_response = {
+  call_id : int64;
+  req : bytes option;
+}
+
 
 (** {2 Basic values} *)
 
@@ -242,6 +253,21 @@ val default_set_position_request :
   set_position_request
 (** [default_set_position_request ()] is the default value for type [set_position_request] *)
 
+val default_rpc_call : 
+  ?call_id:int64 ->
+  ?name:string ->
+  ?req:bytes ->
+  unit ->
+  rpc_call
+(** [default_rpc_call ()] is the default value for type [rpc_call] *)
+
+val default_rpc_response : 
+  ?call_id:int64 ->
+  ?req:bytes option ->
+  unit ->
+  rpc_response
+(** [default_rpc_response ()] is the default value for type [rpc_response] *)
+
 
 (** {2 Protobuf Encoding} *)
 
@@ -301,6 +327,12 @@ val encode_pb_seek_request : seek_request -> Pbrt.Encoder.t -> unit
 
 val encode_pb_set_position_request : set_position_request -> Pbrt.Encoder.t -> unit
 (** [encode_pb_set_position_request v encoder] encodes [v] with the given [encoder] *)
+
+val encode_pb_rpc_call : rpc_call -> Pbrt.Encoder.t -> unit
+(** [encode_pb_rpc_call v encoder] encodes [v] with the given [encoder] *)
+
+val encode_pb_rpc_response : rpc_response -> Pbrt.Encoder.t -> unit
+(** [encode_pb_rpc_response v encoder] encodes [v] with the given [encoder] *)
 
 
 (** {2 Protobuf Decoding} *)
@@ -362,6 +394,12 @@ val decode_pb_seek_request : Pbrt.Decoder.t -> seek_request
 val decode_pb_set_position_request : Pbrt.Decoder.t -> set_position_request
 (** [decode_pb_set_position_request decoder] decodes a [set_position_request] binary value from [decoder] *)
 
+val decode_pb_rpc_call : Pbrt.Decoder.t -> rpc_call
+(** [decode_pb_rpc_call decoder] decodes a [rpc_call] binary value from [decoder] *)
+
+val decode_pb_rpc_response : Pbrt.Decoder.t -> rpc_response
+(** [decode_pb_rpc_response decoder] decodes a [rpc_response] binary value from [decoder] *)
+
 
 (** {2 Protobuf YoJson Encoding} *)
 
@@ -422,6 +460,12 @@ val encode_json_seek_request : seek_request -> Yojson.Basic.t
 val encode_json_set_position_request : set_position_request -> Yojson.Basic.t
 (** [encode_json_set_position_request v encoder] encodes [v] to to json *)
 
+val encode_json_rpc_call : rpc_call -> Yojson.Basic.t
+(** [encode_json_rpc_call v encoder] encodes [v] to to json *)
+
+val encode_json_rpc_response : rpc_response -> Yojson.Basic.t
+(** [encode_json_rpc_response v encoder] encodes [v] to to json *)
+
 
 (** {2 JSON Decoding} *)
 
@@ -481,6 +525,12 @@ val decode_json_seek_request : Yojson.Basic.t -> seek_request
 
 val decode_json_set_position_request : Yojson.Basic.t -> set_position_request
 (** [decode_json_set_position_request decoder] decodes a [set_position_request] value from [decoder] *)
+
+val decode_json_rpc_call : Yojson.Basic.t -> rpc_call
+(** [decode_json_rpc_call decoder] decodes a [rpc_call] value from [decoder] *)
+
+val decode_json_rpc_response : Yojson.Basic.t -> rpc_response
+(** [decode_json_rpc_response decoder] decodes a [rpc_response] value from [decoder] *)
 
 
 (** {2 Services} *)

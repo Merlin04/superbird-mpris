@@ -19,6 +19,7 @@ depends: [
   "ocaml-protoc"
   "pbrt"
   "pbrt_services"
+  "ounit2"
   "odoc" {with-doc}
 ]
 build: [

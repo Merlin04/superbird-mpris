@@ -123,6 +123,17 @@ type set_position_request = {
   offset : int64;
 }
 
+type rpc_call = {
+  call_id : int64;
+  name : string;
+  req : bytes;
+}
+
+type rpc_response = {
+  call_id : int64;
+  req : bytes option;
+}
+
 let rec default_empty = ()
 
 let rec default_loop_status () = (Loop_status_none:loop_status)
@@ -243,6 +254,24 @@ let rec default_set_position_request
   () : set_position_request  = {
   o_track_id;
   offset;
+}
+
+let rec default_rpc_call 
+  ?call_id:((call_id:int64) = 0L)
+  ?name:((name:string) = "")
+  ?req:((req:bytes) = Bytes.create 0)
+  () : rpc_call  = {
+  call_id;
+  name;
+  req;
+}
+
+let rec default_rpc_response 
+  ?call_id:((call_id:int64) = 0L)
+  ?req:((req:bytes option) = None)
+  () : rpc_response  = {
+  call_id;
+  req;
 }
 
 type property_update_metadata_mutable = {
@@ -367,6 +396,28 @@ type set_position_request_mutable = {
 let default_set_position_request_mutable () : set_position_request_mutable = {
   o_track_id = "";
   offset = 0L;
+}
+
+type rpc_call_mutable = {
+  mutable call_id : int64;
+  mutable name : string;
+  mutable req : bytes;
+}
+
+let default_rpc_call_mutable () : rpc_call_mutable = {
+  call_id = 0L;
+  name = "";
+  req = Bytes.create 0;
+}
+
+type rpc_response_mutable = {
+  mutable call_id : int64;
+  mutable req : bytes option;
+}
+
+let default_rpc_response_mutable () : rpc_response_mutable = {
+  call_id = 0L;
+  req = None;
 }
 
 [@@@ocaml.warning "-27-30-39"]
@@ -656,6 +707,26 @@ let rec encode_pb_set_position_request (v:set_position_request) encoder =
   Pbrt.Encoder.key 1 Pbrt.Bytes encoder; 
   Pbrt.Encoder.int64_as_varint v.offset encoder;
   Pbrt.Encoder.key 2 Pbrt.Varint encoder; 
+  ()
+
+let rec encode_pb_rpc_call (v:rpc_call) encoder = 
+  Pbrt.Encoder.int64_as_varint v.call_id encoder;
+  Pbrt.Encoder.key 1 Pbrt.Varint encoder; 
+  Pbrt.Encoder.string v.name encoder;
+  Pbrt.Encoder.key 2 Pbrt.Bytes encoder; 
+  Pbrt.Encoder.bytes v.req encoder;
+  Pbrt.Encoder.key 3 Pbrt.Bytes encoder; 
+  ()
+
+let rec encode_pb_rpc_response (v:rpc_response) encoder = 
+  Pbrt.Encoder.int64_as_varint v.call_id encoder;
+  Pbrt.Encoder.key 1 Pbrt.Varint encoder; 
+  begin match v.req with
+  | Some x -> 
+    Pbrt.Encoder.bytes x encoder;
+    Pbrt.Encoder.key 2 Pbrt.Bytes encoder; 
+  | None -> ();
+  end;
   ()
 
 [@@@ocaml.warning "-27-30-39"]
@@ -1112,6 +1183,60 @@ let rec decode_pb_set_position_request d =
     offset = v.offset;
   } : set_position_request)
 
+let rec decode_pb_rpc_call d =
+  let v = default_rpc_call_mutable () in
+  let continue__= ref true in
+  while !continue__ do
+    match Pbrt.Decoder.key d with
+    | None -> (
+    ); continue__ := false
+    | Some (1, Pbrt.Varint) -> begin
+      v.call_id <- Pbrt.Decoder.int64_as_varint d;
+    end
+    | Some (1, pk) -> 
+      Pbrt.Decoder.unexpected_payload "Message(rpc_call), field(1)" pk
+    | Some (2, Pbrt.Bytes) -> begin
+      v.name <- Pbrt.Decoder.string d;
+    end
+    | Some (2, pk) -> 
+      Pbrt.Decoder.unexpected_payload "Message(rpc_call), field(2)" pk
+    | Some (3, Pbrt.Bytes) -> begin
+      v.req <- Pbrt.Decoder.bytes d;
+    end
+    | Some (3, pk) -> 
+      Pbrt.Decoder.unexpected_payload "Message(rpc_call), field(3)" pk
+    | Some (_, payload_kind) -> Pbrt.Decoder.skip d payload_kind
+  done;
+  ({
+    call_id = v.call_id;
+    name = v.name;
+    req = v.req;
+  } : rpc_call)
+
+let rec decode_pb_rpc_response d =
+  let v = default_rpc_response_mutable () in
+  let continue__= ref true in
+  while !continue__ do
+    match Pbrt.Decoder.key d with
+    | None -> (
+    ); continue__ := false
+    | Some (1, Pbrt.Varint) -> begin
+      v.call_id <- Pbrt.Decoder.int64_as_varint d;
+    end
+    | Some (1, pk) -> 
+      Pbrt.Decoder.unexpected_payload "Message(rpc_response), field(1)" pk
+    | Some (2, Pbrt.Bytes) -> begin
+      v.req <- Some (Pbrt.Decoder.bytes d);
+    end
+    | Some (2, pk) -> 
+      Pbrt.Decoder.unexpected_payload "Message(rpc_response), field(2)" pk
+    | Some (_, payload_kind) -> Pbrt.Decoder.skip d payload_kind
+  done;
+  ({
+    call_id = v.call_id;
+    req = v.req;
+  } : rpc_response)
+
 [@@@ocaml.warning "-27-30-39"]
 
 (** {2 Protobuf YoJson Encoding} *)
@@ -1324,6 +1449,22 @@ let rec encode_json_set_position_request (v:set_position_request) =
   let assoc = [] in 
   let assoc = ("oTrackId", Pbrt_yojson.make_string v.o_track_id) :: assoc in
   let assoc = ("offset", Pbrt_yojson.make_string (Int64.to_string v.offset)) :: assoc in
+  `Assoc assoc
+
+let rec encode_json_rpc_call (v:rpc_call) = 
+  let assoc = [] in 
+  let assoc = ("callId", Pbrt_yojson.make_string (Int64.to_string v.call_id)) :: assoc in
+  let assoc = ("name", Pbrt_yojson.make_string v.name) :: assoc in
+  let assoc = ("req", Pbrt_yojson.make_bytes v.req) :: assoc in
+  `Assoc assoc
+
+let rec encode_json_rpc_response (v:rpc_response) = 
+  let assoc = [] in 
+  let assoc = ("callId", Pbrt_yojson.make_string (Int64.to_string v.call_id)) :: assoc in
+  let assoc = match v.req with
+    | None -> assoc
+    | Some v -> ("req", Pbrt_yojson.make_bytes v) :: assoc
+  in
   `Assoc assoc
 
 [@@@ocaml.warning "-27-30-39"]
@@ -1711,6 +1852,47 @@ let rec decode_json_set_position_request d =
     o_track_id = v.o_track_id;
     offset = v.offset;
   } : set_position_request)
+
+let rec decode_json_rpc_call d =
+  let v = default_rpc_call_mutable () in
+  let assoc = match d with
+    | `Assoc assoc -> assoc
+    | _ -> assert(false)
+  in
+  List.iter (function 
+    | ("callId", json_value) -> 
+      v.call_id <- Pbrt_yojson.int64 json_value "rpc_call" "call_id"
+    | ("name", json_value) -> 
+      v.name <- Pbrt_yojson.string json_value "rpc_call" "name"
+    | ("req", json_value) -> 
+      v.req <- Pbrt_yojson.bytes json_value "rpc_call" "req"
+    
+    | (_, _) -> () (*Unknown fields are ignored*)
+  ) assoc;
+  ({
+    call_id = v.call_id;
+    name = v.name;
+    req = v.req;
+  } : rpc_call)
+
+let rec decode_json_rpc_response d =
+  let v = default_rpc_response_mutable () in
+  let assoc = match d with
+    | `Assoc assoc -> assoc
+    | _ -> assert(false)
+  in
+  List.iter (function 
+    | ("callId", json_value) -> 
+      v.call_id <- Pbrt_yojson.int64 json_value "rpc_response" "call_id"
+    | ("req", json_value) -> 
+      v.req <- Some (Pbrt_yojson.bytes json_value "rpc_response" "req")
+    
+    | (_, _) -> () (*Unknown fields are ignored*)
+  ) assoc;
+  ({
+    call_id = v.call_id;
+    req = v.req;
+  } : rpc_response)
 
 module MPRIS = struct
   open Pbrt_services.Value_mode
