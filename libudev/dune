@@ -1,0 +1,4 @@
+(library
+ (name udev)
+ (libraries ctypes ctypes-foreign stdint)
+ (flags (:standard -warn-error -A -cclib -ludev)))

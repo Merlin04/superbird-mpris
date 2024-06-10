@@ -14,12 +14,16 @@ depends: [
   "dune" {>= "3.15"}
   "mpris"
   "obus"
+  "libudev"
   "lwt"
   "react"
   "ocaml-protoc"
   "pbrt"
   "pbrt_services"
   "ounit2"
+  "ctypes"
+  "ctypes-foreign"
+  "stdint"
   "odoc" {with-doc}
 ]
 build: [

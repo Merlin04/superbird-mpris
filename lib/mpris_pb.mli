@@ -138,7 +138,7 @@ type rpc_call = {
 
 type rpc_response = {
   call_id : int64;
-  req : bytes option;
+  res : bytes option;
 }
 
 
@@ -263,7 +263,7 @@ val default_rpc_call :
 
 val default_rpc_response : 
   ?call_id:int64 ->
-  ?req:bytes option ->
+  ?res:bytes option ->
   unit ->
   rpc_response
 (** [default_rpc_response ()] is the default value for type [rpc_response] *)

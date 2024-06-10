@@ -171,5 +171,5 @@ message RpcCall {
 
 message RpcResponse {
   int64 call_id = 1;
-  optional bytes req = 2;
+  optional bytes res = 2;
 }

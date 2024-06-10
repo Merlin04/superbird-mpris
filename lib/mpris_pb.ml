@@ -131,7 +131,7 @@ type rpc_call = {
 
 type rpc_response = {
   call_id : int64;
-  req : bytes option;
+  res : bytes option;
 }
 
 let rec default_empty = ()
@@ -268,10 +268,10 @@ let rec default_rpc_call
 
 let rec default_rpc_response 
   ?call_id:((call_id:int64) = 0L)
-  ?req:((req:bytes option) = None)
+  ?res:((res:bytes option) = None)
   () : rpc_response  = {
   call_id;
-  req;
+  res;
 }
 
 type property_update_metadata_mutable = {
@@ -412,12 +412,12 @@ let default_rpc_call_mutable () : rpc_call_mutable = {
 
 type rpc_response_mutable = {
   mutable call_id : int64;
-  mutable req : bytes option;
+  mutable res : bytes option;
 }
 
 let default_rpc_response_mutable () : rpc_response_mutable = {
   call_id = 0L;
-  req = None;
+  res = None;
 }
 
 [@@@ocaml.warning "-27-30-39"]
@@ -721,7 +721,7 @@ let rec encode_pb_rpc_call (v:rpc_call) encoder =
 let rec encode_pb_rpc_response (v:rpc_response) encoder = 
   Pbrt.Encoder.int64_as_varint v.call_id encoder;
   Pbrt.Encoder.key 1 Pbrt.Varint encoder; 
-  begin match v.req with
+  begin match v.res with
   | Some x -> 
     Pbrt.Encoder.bytes x encoder;
     Pbrt.Encoder.key 2 Pbrt.Bytes encoder; 
@@ -1226,7 +1226,7 @@ let rec decode_pb_rpc_response d =
     | Some (1, pk) -> 
       Pbrt.Decoder.unexpected_payload "Message(rpc_response), field(1)" pk
     | Some (2, Pbrt.Bytes) -> begin
-      v.req <- Some (Pbrt.Decoder.bytes d);
+      v.res <- Some (Pbrt.Decoder.bytes d);
     end
     | Some (2, pk) -> 
       Pbrt.Decoder.unexpected_payload "Message(rpc_response), field(2)" pk
@@ -1234,7 +1234,7 @@ let rec decode_pb_rpc_response d =
   done;
   ({
     call_id = v.call_id;
-    req = v.req;
+    res = v.res;
   } : rpc_response)
 
 [@@@ocaml.warning "-27-30-39"]
@@ -1461,9 +1461,9 @@ let rec encode_json_rpc_call (v:rpc_call) =
 let rec encode_json_rpc_response (v:rpc_response) = 
   let assoc = [] in 
   let assoc = ("callId", Pbrt_yojson.make_string (Int64.to_string v.call_id)) :: assoc in
-  let assoc = match v.req with
+  let assoc = match v.res with
     | None -> assoc
-    | Some v -> ("req", Pbrt_yojson.make_bytes v) :: assoc
+    | Some v -> ("res", Pbrt_yojson.make_bytes v) :: assoc
   in
   `Assoc assoc
 
@@ -1884,14 +1884,14 @@ let rec decode_json_rpc_response d =
   List.iter (function 
     | ("callId", json_value) -> 
       v.call_id <- Pbrt_yojson.int64 json_value "rpc_response" "call_id"
-    | ("req", json_value) -> 
-      v.req <- Some (Pbrt_yojson.bytes json_value "rpc_response" "req")
+    | ("res", json_value) -> 
+      v.res <- Some (Pbrt_yojson.bytes json_value "rpc_response" "res")
     
     | (_, _) -> () (*Unknown fields are ignored*)
   ) assoc;
   ({
     call_id = v.call_id;
-    req = v.req;
+    res = v.res;
   } : rpc_response)
 
 module MPRIS = struct
