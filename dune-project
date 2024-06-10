@@ -19,7 +19,7 @@
  (name superbird_mpris)
  (synopsis "A short synopsis")
  (description "A longer description")
- (depends ocaml dune mpris obus lwt react ocaml-protoc pbrt pbrt_services ounit2 ctypes ctypes-foreign stdint)
+ (depends ocaml dune mpris obus lwt react ocaml-protoc pbrt pbrt_services cobs ounit2 ctypes ctypes-foreign stdint)
  (tags
   (topics "to describe" your project)))
 

@@ -19,6 +19,7 @@ depends: [
   "ocaml-protoc"
   "pbrt"
   "pbrt_services"
+  "cobs"
   "ounit2"
   "ctypes"
   "ctypes-foreign"
