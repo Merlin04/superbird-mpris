@@ -2,18 +2,7 @@ open Pbrt_services
 open Superbird_mpris
 open Lwt.Syntax
 
-let encoder_size = 2048
-
-let pbrt_encoder = Pbrt.Encoder.create ~size:encoder_size ()
-
-let encode_with_pbrt_fn (encode : 't -> Pbrt.Encoder.t -> unit) (v : 't) : bytes =
-  encode v pbrt_encoder;
-  let b = Pbrt.Encoder.to_bytes pbrt_encoder in
-  (if Bytes.length b > encoder_size then
-    Pbrt.Encoder.reset
-  else
-    Pbrt.Encoder.clear) pbrt_encoder;
-  b
+let pbrt_encoder = Pb.make_encoder ()
 
 type handler_fn =
   | UnaryUnary of (bytes -> bytes Lwt.t)
@@ -24,7 +13,7 @@ let decode_req (rpc : ('req, _, _, _) Server.rpc) (b : bytes) : 'req =
   b |> Pbrt.Decoder.of_bytes |> rpc.decode_pb_req
 
 let encode_res (rpc : (_, _, 'res, _) Server.rpc) (res : 'res) : bytes =
-  encode_with_pbrt_fn rpc.encode_pb_res res
+  Pb.encode_with_pbrt_fn pbrt_encoder rpc.encode_pb_res res
 
 let mk_handler_uu
   (f : 'req -> 'res Lwt.t)
@@ -57,7 +46,7 @@ let run (server : handler Pbrt_services.Server.t) (transport : Transport.t) : un
   let handle_rpc_call_frame (fr : bytes) : unit Lwt.t =
     let { Mpris_pb.call_id; Mpris_pb.name; Mpris_pb.req; } = decode_rpc_call_frame fr in
     let write_response (res : bytes option) =
-      encode_with_pbrt_fn Mpris_pb.encode_pb_rpc_response { call_id; res } |> transport.write_frame
+      Pb.encode_with_pbrt_fn pbrt_encoder Mpris_pb.encode_pb_rpc_response { call_id; res } |> transport.write_frame
     in
     let handler = List.find (fun h -> h.name = name) server.handlers in
     match handler.f with

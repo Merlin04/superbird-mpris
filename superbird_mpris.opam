@@ -2,28 +2,30 @@
 opam-version: "2.0"
 synopsis: "A short synopsis"
 description: "A longer description"
-maintainer: ["Maintainer Name"]
-authors: ["Author Name"]
+maintainer: ["Merlin04"]
+authors: ["Merlin04"]
 license: "LICENSE"
 tags: ["topics" "to describe" "your" "project"]
-homepage: "https://github.com/username/reponame"
+homepage: "https://github.com/Merlin04/superbird-mpris"
 doc: "https://url/to/documentation"
-bug-reports: "https://github.com/username/reponame/issues"
+bug-reports: "https://github.com/Merlin04/superbird-mpris/issues"
 depends: [
   "ocaml"
   "dune" {>= "3.15"}
-  "mpris"
-  "obus"
+  "ounit2"
   "lwt"
   "react"
+  "mpris"
+  "obus"
   "ocaml-protoc"
   "pbrt"
   "pbrt_services"
   "cobs"
-  "ounit2"
   "ctypes"
   "ctypes-foreign"
   "stdint"
+  "websocket"
+  "websocket-lwt-unix"
   "odoc" {with-doc}
 ]
 build: [
@@ -40,4 +42,4 @@ build: [
     "@doc" {with-doc}
   ]
 ]
-dev-repo: "git+https://github.com/username/reponame.git"
+dev-repo: "git+https://github.com/Merlin04/superbird-mpris.git"

@@ -1,0 +1,4 @@
+(executable
+ (public_name superbird_mprisbridge)
+ (name main)
+ (libraries superbird_mpris lwt lwt.unix cobs websocket websocket-lwt-unix))

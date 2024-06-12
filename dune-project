@@ -5,11 +5,11 @@
 (generate_opam_files true)
 
 (source
- (github username/reponame))
+ (github Merlin04/superbird-mpris))
 
-(authors "Author Name")
+(authors "Merlin04")
 
-(maintainers "Maintainer Name")
+(maintainers "Merlin04")
 
 (license LICENSE)
 
@@ -19,7 +19,13 @@
  (name superbird_mpris)
  (synopsis "A short synopsis")
  (description "A longer description")
- (depends ocaml dune mpris obus lwt react ocaml-protoc pbrt pbrt_services cobs ounit2 ctypes ctypes-foreign stdint)
+ (depends
+  ocaml dune ounit2 lwt react
+  mpris obus
+  ocaml-protoc pbrt pbrt_services
+  cobs
+  ctypes ctypes-foreign stdint
+  websocket websocket-lwt-unix)
  (tags
   (topics "to describe" your project)))
 
