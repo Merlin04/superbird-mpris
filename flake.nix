@@ -97,13 +97,13 @@
           musl =
             let pkgs' = pkgs.pkgsCross.musl64; in
             pkgs'.lib.callPackageWith pkgs' ./nix {
-              static = true;
+              profile = "static";
               nix-filter = nix-filter.lib;
             };
           arm64-musl =
             let pkgs' = pkgs.pkgsCross.aarch64-multiplatform-musl; in
             (pkgs'.lib.callPackageWith pkgs' ./nix {
-              static = true;
+              profile = "static-cross";
               nix-filter = nix-filter.lib;
               crossName = "aarch64";
             }).overrideAttrs (o: {

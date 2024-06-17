@@ -1,9 +1,10 @@
 (env
  (static
-  (flags
-   (:standard -ccopt -static))
   (ocamlopt_flags
-   (:standard -O3 -unbox-closures)))
+   (:standard -O3 -unbox-closures -ccopt -static)))
+ (static-cross
+  (ocamlopt_flags
+   (:standard -O3 -unbox-closures -ccopt -static -ccopt -no-pie -ccopt -static-pie)))
  (release
   (ocamlopt_flags
    (:standard -O3 -unbox-closures))))
