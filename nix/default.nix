@@ -12,6 +12,7 @@ ocamlPackages.buildDunePackage {
   src = with nix-filter; filter {
     root = ./..;
     include = [
+      "dune"
       "dune-project"
       "superbird_mpris.opam"
       "client_bridge"
