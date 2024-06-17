@@ -12,61 +12,78 @@
     nixpkgs.inputs.flake-utils.follows = "flake-utils";
 
     #    nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/*.tar.gz";
-    nixpkgs.url = "github:nix-ocaml/nix-overlays";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nix-overlays.url = "github:nix-ocaml/nix-overlays";
   };
 
   # Flake outputs that other flakes can use
-  outputs = { self, flake-schemas, nixpkgs, flake-utils, nix-filter }:
+  outputs = { self, nixpkgs, nix-overlays, flake-utils, nix-filter }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = nixpkgs.legacyPackages."${system}".extend (self: super: {
-          ocamlPackages = super.ocaml-ng.ocamlPackages_5_2.overrideScope(oself: osuper: {
-            cobs = oself.buildDunePackage rec {
-              pname = "cobs";
-              version = "0.1.1";
-              src = builtins.fetchurl {
-                url = "https://github.com/Merlin04/ocaml-cobs/archive/refs/tags/0.1.1.tar.gz";
-                sha256 = "sha256:0pslkilvaa2i2514cssnyv59kv4zy4b7d7fa7zalxnvmqjl7v9w1";
-              };
-              propagatedBuildInputs = [ ];
+        pkgs = nixpkgs.legacyPackages."${system}".appendOverlays [
+          ## append an overlay to nixpkgs.ocamlPackages
+          (self: super: {
+            ocaml-ng = super.ocaml-ng // {
+              ocamlPackages_5_2 = super.ocaml-ng.ocamlPackages_5_2.overrideScope (oself: osuper: {
+                cobs = oself.buildDunePackage {
+                  pname = "cobs";
+                  version = "0.1.1";
+                  src = builtins.fetchurl {
+                    url = "https://github.com/Merlin04/ocaml-cobs/archive/refs/tags/0.1.1.tar.gz";
+                    sha256 = "sha256:0pslkilvaa2i2514cssnyv59kv4zy4b7d7fa7zalxnvmqjl7v9w1";
+                  };
+                  propagatedBuildInputs = [ ];
+                };
+                pbrt = oself.buildDunePackage {
+                  pname = "pbrt";
+                  version = "3.0.1";
+                  src = builtins.fetchurl {
+                    url = "https://github.com/mransan/ocaml-protoc/releases/download/v3.0.2/ocaml-protoc-3.0.2.tbz";
+                    sha256 = "sha256:1v2z40ssp98mds1cplxpb2a98wlksh0v5p4959mpdh0cc59sjg7b";
+                  };
+                  propagatedBuildInputs = [
+                    oself.stdlib-shims
+                  ];
+                };
+                pbrt_yojson = oself.buildDunePackage {
+                  pname = "pbrt_yojson";
+                  version = "3.0.1";
+                  src = builtins.fetchurl {
+                    url = "https://github.com/mransan/ocaml-protoc/releases/download/v3.0.2/ocaml-protoc-3.0.2.tbz";
+                    sha256 = "sha256:1v2z40ssp98mds1cplxpb2a98wlksh0v5p4959mpdh0cc59sjg7b";
+                  };
+                  propagatedBuildInputs = [
+                    oself.yojson
+                    oself.base64
+                  ];
+                };
+                pbrt_services = oself.buildDunePackage {
+                  pname = "pbrt_services";
+                  version = "3.0.1";
+                  src = builtins.fetchurl {
+                    url = "https://github.com/mransan/ocaml-protoc/releases/download/v3.0.2/ocaml-protoc-3.0.2.tbz";
+                    sha256 = "sha256:1v2z40ssp98mds1cplxpb2a98wlksh0v5p4959mpdh0cc59sjg7b";
+                  };
+                  propagatedBuildInputs = with oself; [
+                    pbrt
+                    pbrt_yojson
+                  ];
+                };
+              });
             };
-            pbrt = oself.buildDunePackage rec {
-              pname = "pbrt";
-              version = "3.0.1";
-              src = builtins.fetchurl {
-                url = "https://github.com/mransan/ocaml-protoc/releases/download/v3.0.2/ocaml-protoc-3.0.2.tbz";
-                sha256 = "sha256:1v2z40ssp98mds1cplxpb2a98wlksh0v5p4959mpdh0cc59sjg7b";
-              };
-              propagatedBuildInputs = [
-                oself.stdlib-shims
-              ];
-            };
-            pbrt_yojson = oself.buildDunePackage rec {
-              pname = "pbrt_yojson";
-              version = "3.0.1";
-              src = builtins.fetchurl {
-                url = "https://github.com/mransan/ocaml-protoc/releases/download/v3.0.2/ocaml-protoc-3.0.2.tbz";
-                sha256 = "sha256:1v2z40ssp98mds1cplxpb2a98wlksh0v5p4959mpdh0cc59sjg7b";
-              };
-              propagatedBuildInputs = [
-                oself.yojson
-                oself.base64
-              ];
-            };
-            pbrt_services = oself.buildDunePackage rec {
-              pname = "pbrt_services";
-              version = "3.0.1";
-              src = builtins.fetchurl {
-                url = "https://github.com/mransan/ocaml-protoc/releases/download/v3.0.2/ocaml-protoc-3.0.2.tbz";
-                sha256 = "sha256:1v2z40ssp98mds1cplxpb2a98wlksh0v5p4959mpdh0cc59sjg7b";
-              };
-              propagatedBuildInputs = with oself; [
-                pbrt
-                pbrt_yojson
-              ];
-            };
-          });
-        });
+          })
+
+          ## now apply the nix-overlays overlay
+          nix-overlays.overlays.default
+
+          ## now pin ocamlPackages = ocamlPackages_5_2. this is already
+          ## the default in nix-overlays but could change in the future.
+
+          (self: super: {
+            ocamlPackages = super.ocaml-ng.ocamlPackages_5_2;
+          })
+        ];
+
         native = pkgs.callPackage ./nix {
           nix-filter = nix-filter.lib;
         };
