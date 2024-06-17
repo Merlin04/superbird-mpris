@@ -17,7 +17,7 @@
   };
 
   # Flake outputs that other flakes can use
-  outputs = { self, nixpkgs, nix-overlays, flake-utils, nix-filter }:
+  outputs = { self, nixpkgs, nix-overlays, flake-utils, nix-filter, flake-schemas }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages."${system}".appendOverlays [
