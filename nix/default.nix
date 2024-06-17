@@ -6,7 +6,7 @@
 , crossName ? null
 }:
 
-ocamlPackages.buildDunePackage {
+stdenv.mkDerivation {
   pname = "superbird_mprisbridge";
   version = "n/a";
   src = with nix-filter; filter {
@@ -20,6 +20,8 @@ ocamlPackages.buildDunePackage {
       "test"
     ];
   };
+
+  nativeBuildInputs = with ocamlPackages; [ dune ocaml findlib ];
 
   OCAMLFIND_TOOLCHAIN = crossName;
   propagatedBuildInputs = with ocamlPackages;
