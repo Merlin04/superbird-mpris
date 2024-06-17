@@ -10,4 +10,5 @@ let rec main () : unit Lwt.t =
   main ()
 
 let () =
+  print_endline "superbird_mprisbridge starting...";;
   Lwt_main.run (main ())

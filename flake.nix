@@ -9,9 +9,6 @@
 
     flake-utils.url = "github:numtide/flake-utils";
     nix-filter.url = "github:numtide/nix-filter";
-    nixpkgs.inputs.flake-utils.follows = "flake-utils";
-
-    #    nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/*.tar.gz";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nix-overlays.url = "github:nix-ocaml/nix-overlays";
   };
