@@ -1,7 +1,7 @@
 { stdenv
 , lib
 , ocamlPackages
-, static ? false
+, profile ? "release"
 , nix-filter
 , crossName ? null
 }:
@@ -35,7 +35,10 @@ stdenv.mkDerivation {
     ];
 
   buildPhase = ''
-    dune build client_bridge/main.exe -j $NIX_BUILD_CORES --display=short --profile=${if static then "static" else "release"}
+    dune build client_bridge/main.exe \
+      --display=short \
+      -j $NIX_BUILD_CORES \
+      --profile=${profile}
   '';
   installPhase = ''
     mkdir -p $out/bin
