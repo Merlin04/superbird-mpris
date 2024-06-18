@@ -7,7 +7,10 @@ let ( let^ ) (o : 'a option) (default : unit -> 'a) : 'a = match o with
   | None -> default ()
 
 let superbird_udev_props = [
-  ("ID_USB_MODEL", "weird-midi")
+  ("ID_USB_MODEL", "Superbird");
+  ("ID_VENDOR_ID", "18d1");
+  ("ID_MODEL_ID", "4e40");
+  ("ID_REVISION", "0223")
 ]
 
 let serial_port_of_device d : string option = List.assoc_opt "DEVNAME" (Device.properties d)
