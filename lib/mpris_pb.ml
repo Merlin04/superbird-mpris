@@ -58,7 +58,7 @@ type property_update_metadata = {
   xesam_title : string option;
   xesam_track_number : int32 option;
   xesam_url : string option;
-  use_count : int32 option;
+  xesam_use_count : int32 option;
   xesam_user_rating : float option;
 }
 
@@ -167,7 +167,7 @@ let rec default_property_update_metadata
   ?xesam_title:((xesam_title:string option) = None)
   ?xesam_track_number:((xesam_track_number:int32 option) = None)
   ?xesam_url:((xesam_url:string option) = None)
-  ?use_count:((use_count:int32 option) = None)
+  ?xesam_use_count:((xesam_use_count:int32 option) = None)
   ?xesam_user_rating:((xesam_user_rating:float option) = None)
   () : property_update_metadata  = {
   o_mpris_trackid;
@@ -190,7 +190,7 @@ let rec default_property_update_metadata
   xesam_title;
   xesam_track_number;
   xesam_url;
-  use_count;
+  xesam_use_count;
   xesam_user_rating;
 }
 
@@ -295,7 +295,7 @@ type property_update_metadata_mutable = {
   mutable xesam_title : string option;
   mutable xesam_track_number : int32 option;
   mutable xesam_url : string option;
-  mutable use_count : int32 option;
+  mutable xesam_use_count : int32 option;
   mutable xesam_user_rating : float option;
 }
 
@@ -320,7 +320,7 @@ let default_property_update_metadata_mutable () : property_update_metadata_mutab
   xesam_title = None;
   xesam_track_number = None;
   xesam_url = None;
-  use_count = None;
+  xesam_use_count = None;
   xesam_user_rating = None;
 }
 
@@ -582,7 +582,7 @@ let rec encode_pb_property_update_metadata (v:property_update_metadata) encoder 
     Pbrt.Encoder.key 20 Pbrt.Bytes encoder; 
   | None -> ();
   end;
-  begin match v.use_count with
+  begin match v.xesam_use_count with
   | Some x -> 
     Pbrt.Encoder.int32_as_varint x encoder;
     Pbrt.Encoder.key 21 Pbrt.Varint encoder; 
@@ -922,7 +922,7 @@ let rec decode_pb_property_update_metadata d =
     | Some (20, pk) -> 
       Pbrt.Decoder.unexpected_payload "Message(property_update_metadata), field(20)" pk
     | Some (21, Pbrt.Varint) -> begin
-      v.use_count <- Some (Pbrt.Decoder.int32_as_varint d);
+      v.xesam_use_count <- Some (Pbrt.Decoder.int32_as_varint d);
     end
     | Some (21, pk) -> 
       Pbrt.Decoder.unexpected_payload "Message(property_update_metadata), field(21)" pk
@@ -954,7 +954,7 @@ let rec decode_pb_property_update_metadata d =
     xesam_title = v.xesam_title;
     xesam_track_number = v.xesam_track_number;
     xesam_url = v.xesam_url;
-    use_count = v.use_count;
+    xesam_use_count = v.xesam_use_count;
     xesam_user_rating = v.xesam_user_rating;
   } : property_update_metadata)
 
@@ -1365,9 +1365,9 @@ let rec encode_json_property_update_metadata (v:property_update_metadata) =
     | None -> assoc
     | Some v -> ("xesamUrl", Pbrt_yojson.make_string v) :: assoc
   in
-  let assoc = match v.use_count with
+  let assoc = match v.xesam_use_count with
     | None -> assoc
-    | Some v -> ("useCount", Pbrt_yojson.make_int (Int32.to_int v)) :: assoc
+    | Some v -> ("xesamUseCount", Pbrt_yojson.make_int (Int32.to_int v)) :: assoc
   in
   let assoc = match v.xesam_user_rating with
     | None -> assoc
@@ -1602,8 +1602,8 @@ let rec decode_json_property_update_metadata d =
       v.xesam_track_number <- Some (Pbrt_yojson.int32 json_value "property_update_metadata" "xesam_track_number")
     | ("xesamUrl", json_value) -> 
       v.xesam_url <- Some (Pbrt_yojson.string json_value "property_update_metadata" "xesam_url")
-    | ("useCount", json_value) -> 
-      v.use_count <- Some (Pbrt_yojson.int32 json_value "property_update_metadata" "use_count")
+    | ("xesamUseCount", json_value) -> 
+      v.xesam_use_count <- Some (Pbrt_yojson.int32 json_value "property_update_metadata" "xesam_use_count")
     | ("xesamUserRating", json_value) -> 
       v.xesam_user_rating <- Some (Pbrt_yojson.float json_value "property_update_metadata" "xesam_user_rating")
     
@@ -1630,7 +1630,7 @@ let rec decode_json_property_update_metadata d =
     xesam_title = v.xesam_title;
     xesam_track_number = v.xesam_track_number;
     xesam_url = v.xesam_url;
-    use_count = v.use_count;
+    xesam_use_count = v.xesam_use_count;
     xesam_user_rating = v.xesam_user_rating;
   } : property_update_metadata)
 
@@ -2092,6 +2092,19 @@ module MPRIS = struct
         ~decode_json_res:(fun _ -> ())
         ~decode_pb_res:(fun d -> Pbrt.Decoder.empty_nested d)
         () : (set_volume_request, unary, unit, unary) Client.rpc)
+    open Pbrt_services
+    
+    let ping : (unit, unary, unit, unary) Client.rpc =
+      (Client.mk_rpc 
+        ~package:[]
+        ~service_name:"MPRIS" ~rpc_name:"Ping"
+        ~req_mode:Client.Unary
+        ~res_mode:Client.Unary
+        ~encode_json_req:(fun () -> `Assoc [])
+        ~encode_pb_req:(fun () enc -> Pbrt.Encoder.empty_nested enc)
+        ~decode_json_res:(fun _ -> ())
+        ~decode_pb_res:(fun d -> Pbrt.Decoder.empty_nested d)
+        () : (unit, unary, unit, unary) Client.rpc)
   end
   
   module Server = struct
@@ -2247,6 +2260,16 @@ module MPRIS = struct
         ~decode_pb_req:decode_pb_set_volume_request
         () : _ Server.rpc)
     
+    let _rpc_ping : (unit,unary,unit,unary) Server.rpc = 
+      (Server.mk_rpc ~name:"Ping"
+        ~req_mode:Server.Unary
+        ~res_mode:Server.Unary
+        ~encode_json_res:(fun () -> `Assoc [])
+        ~encode_pb_res:(fun () enc -> Pbrt.Encoder.empty_nested enc)
+        ~decode_json_req:(fun _ -> ())
+        ~decode_pb_req:(fun d -> Pbrt.Decoder.empty_nested d)
+        () : _ Server.rpc)
+    
     let make
       ~fetchProperty
       ~subscribe
@@ -2263,6 +2286,7 @@ module MPRIS = struct
       ~setRate
       ~setShuffle
       ~setVolume
+      ~ping
       () : _ Server.t =
       { Server.
         service_name="MPRIS";
@@ -2283,6 +2307,7 @@ module MPRIS = struct
            (setRate _rpc_setRate);
            (setShuffle _rpc_setShuffle);
            (setVolume _rpc_setVolume);
+           (ping _rpc_ping);
         ];
       }
   end

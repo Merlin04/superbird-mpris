@@ -65,7 +65,7 @@ type property_update_metadata = {
   xesam_title : string option;
   xesam_track_number : int32 option;
   xesam_url : string option;
-  use_count : int32 option;
+  xesam_use_count : int32 option;
   xesam_user_rating : float option;
 }
 
@@ -183,7 +183,7 @@ val default_property_update_metadata :
   ?xesam_title:string option ->
   ?xesam_track_number:int32 option ->
   ?xesam_url:string option ->
-  ?use_count:int32 option ->
+  ?xesam_use_count:int32 option ->
   ?xesam_user_rating:float option ->
   unit ->
   property_update_metadata
@@ -571,6 +571,8 @@ module MPRIS : sig
     val setShuffle : (set_shuffle_request, unary, unit, unary) Client.rpc
     
     val setVolume : (set_volume_request, unary, unit, unary) Client.rpc
+    
+    val ping : (unit, unary, unit, unary) Client.rpc
   end
   
   module Server : sig
@@ -591,6 +593,7 @@ module MPRIS : sig
       setRate:((set_rate_request, unary, unit, unary) Server.rpc -> 'handler) ->
       setShuffle:((set_shuffle_request, unary, unit, unary) Server.rpc -> 'handler) ->
       setVolume:((set_volume_request, unary, unit, unary) Server.rpc -> 'handler) ->
+      ping:((unit, unary, unit, unary) Server.rpc -> 'handler) ->
       unit -> 'handler Pbrt_services.Server.t
   end
 end

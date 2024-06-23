@@ -1,0 +1,67 @@
+@import url("./variables.css");
+
+:root {
+  font-family: spotify-circular, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  letter-spacing: -.02em;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#container, #root {
+  height: var(--device-height);
+  max-height: var(--device-height);
+  width: var(--device-width);
+  max-width: var(--device-width);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+}
+
+#corners {
+  pointer-events: none;
+  position: absolute;
+  z-index: 1000;
+}
+
+@font-face {
+  font-family: spotify-circular;
+  src: url('./fonts/CircularSpUIv3T-Book.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: spotify-circular;
+  src: url('./fonts/CircularSpUIv3T-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: spotify-circular;
+  src: url('./fonts/CircularSpUIv3T-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+}

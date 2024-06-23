@@ -1,4 +1,4 @@
 (executable
  (public_name superbird_mprisd)
  (name main)
- (libraries superbird_mpris mpris obus lwt lwt.unix cobs udev))
+ (libraries superbird_mpris mpris obus lwt lwt.unix cobs udev uri))

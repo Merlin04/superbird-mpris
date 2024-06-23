@@ -68,7 +68,7 @@ message PropertyUpdate {
     optional string xesam__title = 18;
     optional int32 xesam__track_number = 19;
     optional string xesam__url = 20; // might as well include, maybe useful for some things. it's really a URI
-    optional uint32 useCount = 21;
+    optional uint32 xesam__use_count = 21;
     optional float xesam__user_rating = 22; // between 0 and 1
   }
 
@@ -161,6 +161,8 @@ service MPRIS {
   rpc SetRate (SetRateRequest) returns (Empty);
   rpc SetShuffle (SetShuffleRequest) returns (Empty);
   rpc SetVolume (SetVolumeRequest) returns (Empty);
+
+  rpc Ping (Empty) returns (Empty);
 }
 
 message RpcCall {

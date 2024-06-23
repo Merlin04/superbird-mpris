@@ -21,7 +21,7 @@
  (description "A longer description")
  (depends
   ocaml dune ounit2 lwt react
-  mpris obus
+  mpris obus uri
   ocaml-protoc pbrt pbrt_services
   cobs
   ctypes ctypes-foreign stdint

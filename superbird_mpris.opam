@@ -17,6 +17,7 @@ depends: [
   "react"
   "mpris"
   "obus"
+  "uri"
   "ocaml-protoc"
   "pbrt"
   "pbrt_services"
